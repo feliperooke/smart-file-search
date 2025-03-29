@@ -38,7 +38,8 @@ For now, we will keep the scope well defined to ensure efficient and high-qualit
 
 ## 🚧 Backlog
 
-<!--issues start-->
-<!--issues end-->
+<!-- issueTable -->
+
+<!-- issueTable -->
 
 
