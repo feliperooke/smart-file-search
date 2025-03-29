@@ -1,28 +1,29 @@
-name: Issues to README
+name: Update issue list on README
 
 on:
   issues:
-    types: [opened, edited, closed, reopened]
+    types: [opened, closed, reopened, edited]
   workflow_dispatch:
 
 jobs:
-  update-readme:
+  update-issue-list:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Generate issues list
-        uses: jaywcjlove/github-action-issues-to-md@main
+
+      - name: Generates issues list
+        uses: dorny/issue-list-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          output: README.md
           state: open
-          header: "## 🚧 Backlog\n\nOpen issues:\n"
+          format: "- [#{number}]({url}) {title}"
+          output-file: README.md
+          output-marker: issues
 
-      - name: Commit and push changes
+      - name: Commit e push mudanças
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add README.md
-          git commit -m "Update issue list on README" || exit 0
+          git commit -m "Update issue list on README" || echo "Nothing to commit"
           git push
