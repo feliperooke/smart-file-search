@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Generate issues list
-        uses: jaywcjlove/issues-to-md@main
+        uses: jaywcjlove/github-action-issues-to-md@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           output: README.md
