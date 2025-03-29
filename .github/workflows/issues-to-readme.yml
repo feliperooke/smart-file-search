@@ -9,18 +9,17 @@ jobs:
   update-issue-list:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: checkout
+        uses: actions/checkout@v2
 
-      - name: Generates issues list
-        uses: dorny/issue-list-action@v1
+      - name: rewriteReadme
+        uses: seed-of-apricot/issue-list-readme@v1.1.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          state: open
-          format: "- [#{number}]({url}) {title}"
-          output-file: README.md
-          output-marker: issues
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          pattern: '<!-- issueTable -->'
+          state: 'open'
 
-      - name: Commit e push mudanças
+      - name: Commit Changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
