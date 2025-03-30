@@ -1,4 +1,4 @@
-# smart-file-search
+# Smart File Search
 
 Hello, Community!
 
