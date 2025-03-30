@@ -2,6 +2,9 @@
 
 This is the backend of the Smart File Search project, built with FastAPI and managed using Poetry.
 
+## Requirements
+- Python 3.11
+
 ---
 
 ## 🚀 Getting Started

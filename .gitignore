@@ -39,3 +39,15 @@ venv.bak/
 # Poetry
 poetry.lock
 dist/ 
+
+# Terraform
+*/.aws/keys*
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.tfplan
+*.tfvars
+*.tfvars.json
+*.tfvars.json.json
+*.tfvars.json.json.json
