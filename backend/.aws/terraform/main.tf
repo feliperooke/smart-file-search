@@ -24,7 +24,7 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
 
 resource "aws_lambda_function" "fastapi" {
   filename         = "${path.module}/../../dist/package.zip"
-  function_name    = "smart-file-search-backend"
+  function_name    = var.lambda_function_name
   role             = aws_iam_role.lambda_exec.arn
   handler          = "app.main.handler"
   source_code_hash = filebase64sha256("${path.module}/../../dist/package.zip")
@@ -37,6 +37,7 @@ resource "aws_lambda_function" "fastapi" {
     variables = {
       LOG_LEVEL = "INFO"
       PYTHONPATH = "/var/task"
+      S3_BUCKET_NAME = aws_s3_bucket.file_storage.id
     }
   }
 
@@ -138,4 +139,70 @@ resource "aws_lambda_permission" "allow_api_gateway" {
   function_name = aws_lambda_function.fastapi.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.api.execution_arn}/*/*"
+}
+
+# Create S3 bucket for file storage
+resource "aws_s3_bucket" "file_storage" {
+  bucket = var.s3_bucket_name
+}
+
+# Enable versioning for the bucket
+resource "aws_s3_bucket_versioning" "file_storage_versioning" {
+  bucket = aws_s3_bucket.file_storage.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# Add S3 bucket policy to allow Lambda access
+resource "aws_s3_bucket_policy" "file_storage_policy" {
+  bucket = aws_s3_bucket.file_storage.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "AllowLambdaAccess"
+        Effect    = "Allow"
+        Principal = {
+          AWS = aws_iam_role.lambda_exec.arn
+        }
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          aws_s3_bucket.file_storage.arn,
+          "${aws_s3_bucket.file_storage.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
+# Add S3 access policy to Lambda execution role
+resource "aws_iam_role_policy" "lambda_s3_access" {
+  name = "lambda_s3_access_policy"
+  role = aws_iam_role.lambda_exec.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          aws_s3_bucket.file_storage.arn,
+          "${aws_s3_bucket.file_storage.arn}/*"
+        ]
+      }
+    ]
+  })
 }
