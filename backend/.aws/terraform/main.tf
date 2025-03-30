@@ -29,7 +29,7 @@ resource "aws_lambda_function" "fastapi" {
   handler          = "app.main.handler"
   source_code_hash = filebase64sha256("${path.module}/../../dist/package.zip")
   runtime          = "python3.11"
-  timeout          = 30
+  timeout          = 15
   memory_size      = 256
   publish          = true
 
@@ -37,7 +37,6 @@ resource "aws_lambda_function" "fastapi" {
     variables = {
       LOG_LEVEL = "INFO"
       PYTHONPATH = "/var/task"
-      AWS_LAMBDA_FUNCTION_HANDLER = "app.main.handler"
     }
   }
 
@@ -82,11 +81,7 @@ resource "aws_iam_role_policy" "api_gateway_cloudwatch" {
         Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:DescribeLogGroups",
-          "logs:DescribeLogStreams",
-          "logs:PutLogEvents",
-          "logs:GetLogEvents",
-          "logs:FilterLogEvents"
+          "logs:PutLogEvents"
         ]
         Resource = "*"
       }
@@ -129,15 +124,10 @@ resource "aws_apigatewayv2_stage" "dev" {
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_gateway.arn
     format = jsonencode({
-      requestId      = "$context.requestId"
-      ip            = "$context.identity.sourceIp"
-      requestTime   = "$context.requestTime"
-      httpMethod    = "$context.httpMethod"
-      routeKey      = "$context.routeKey"
-      status        = "$context.status"
-      protocol      = "$context.protocol"
+      requestId    = "$context.requestId"
+      httpMethod  = "$context.httpMethod"
+      status      = "$context.status"
       responseLength = "$context.responseLength"
-      integrationError = "$context.integrationErrorMessage"
     })
   }
 }
