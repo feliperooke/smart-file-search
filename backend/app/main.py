@@ -13,7 +13,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI(root_path="/dev")
+app = FastAPI()
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
