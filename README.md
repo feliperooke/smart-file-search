@@ -26,6 +26,23 @@ The formats we will accept include:
 - TXT (Text)
 - PDF (General)
 
+### 🔍 Optimized Search Experience
+
+Imagine uploading your favorite book - say, "The Little Prince" - and being able to ask it questions naturally. For example:
+
+ - **You ask:** "What did the fox teach about friendship?"
+ - **The system** instantly finds and highlights the exact passage where the fox explains: "It's the time you spent on your rose that makes your rose so important... You become responsible forever for what you've tamed."
+
+This magic happens through semantic search. Instead of just matching keywords, our system understands meaning. When you:
+
+1. Upload files, we convert text into AI-powered "meaning vectors"
+2. Ask a question, it finds conceptually related passages
+3. Get precise answers with highlighted context
+
+Search through your documents like you're asking a friend. Just type what you're looking for in plain language and get the exact answers you need - no more scrolling or skimming through pages.
+
+
+
 ### 💡 Future Ideas
 
 While our initial focus is on documents, we may expand this system in the future to process other file types. For example:
