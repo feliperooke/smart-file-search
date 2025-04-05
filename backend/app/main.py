@@ -5,7 +5,7 @@ import sys
 
 from app.uploads.router import router as uploads_router
 from app.health.router import router as health_router
-from app.file_processor.router import router as file_processor_router
+from app.file_processing.router import router as file_processing_router
 
 # Configure logging
 logging.basicConfig(
@@ -24,7 +24,7 @@ app = FastAPI(
 # Register routers
 app.include_router(uploads_router, prefix="/api")
 app.include_router(health_router, prefix="/api")
-app.include_router(file_processor_router, prefix="/api")
+app.include_router(file_processing_router, prefix="/api")
 
-# Entry point for AWS Lambda
-handler = Mangum(app)
+# AWS Lambda handler
+handler = Mangum(app, lifespan="off") 
