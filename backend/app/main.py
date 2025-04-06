@@ -5,6 +5,7 @@ import sys
 
 from app.uploads.router import router as uploads_router
 from app.health.router import router as health_router
+from app.file_processing.router import router as file_processing_router
 
 # Configure logging
 logging.basicConfig(
@@ -14,10 +15,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(
+    title="Smart File Search API",
+    description="API for processing and searching files",
+    version="1.0.0"
+)
 
+# Register routers
 app.include_router(uploads_router, prefix="/api")
 app.include_router(health_router, prefix="/api")
+app.include_router(file_processing_router, prefix="/api")
 
-# Entry point for AWS Lambda
-handler = Mangum(app)
+# AWS Lambda handler
+handler = Mangum(app, lifespan="off") 

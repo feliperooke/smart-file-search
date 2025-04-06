@@ -23,7 +23,6 @@ wheels/
 htmlcov/
 
 # Virtual Environment
-.env
 .venv
 env/
 venv/

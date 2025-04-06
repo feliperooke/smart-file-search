@@ -1,5 +1,4 @@
-from pydantic import BaseModel
+from app.common.schemas import FileResponse
 
-class FileUploadResponse(BaseModel):
-    filename: str
-    url: str
+class FileUploadResponse(FileResponse):
+    pass

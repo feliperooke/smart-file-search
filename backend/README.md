@@ -1,76 +1,179 @@
 # Smart File Search (Backend)
 
-This is the backend of the Smart File Search project, built with FastAPI and managed using Poetry.
+This is the backend of the Smart File Search project, built with FastAPI and deployed on AWS Lambda. The application processes various file formats (PDF, DOCX, XLSX) and converts them to Markdown format for efficient searching and viewing.
 
 ## 📋 Requirements
 
 ### Local Development
-- Python 3.11
+- Python 3.12
 - Poetry (Python package manager)
+- Docker (for containerized development)
 
 ### AWS Deployment
 - AWS CLI configured with appropriate credentials
 - Terraform installed
+- Docker (for building container images)
 
----
+## 🏗️ Project Structure
+
+```
+.
+├── app/                    # Application source code
+│   ├── core/              # Core functionality and configurations
+│   ├── common/            # Shared utilities and helpers
+│   ├── file_processing/   # File processing logic
+│   ├── text_extraction/   # Text extraction from different file formats
+│   ├── uploads/           # File upload handling
+│   ├── health/            # Health check endpoints
+│   └── main.py           # Application entry point
+├── terraform/             # Infrastructure as Code
+├── tests/                 # Test files
+├── Dockerfile            # Container definition
+├── pyproject.toml        # Python dependencies and project metadata
+└── Makefile              # Build and deployment automation
+```
+
+## 🔄 Architecture Flow
+
+The application follows this flow for processing files:
+
+```mermaid
+sequenceDiagram
+    participant FE as Frontend
+    participant Lambda as Lambda (API)
+    participant DDB as DynamoDB
+    participant S3 as S3 (Storage)
+
+    FE->>Lambda: Send file (POST /api/process)
+    Lambda->>Lambda: Compute file hash
+
+    Lambda->>DDB: Check if file exists (by hash)
+    DDB-->>Lambda: File metadata or null
+
+    alt File already processed
+        Lambda-->>FE: Return cached Markdown
+    else
+        par Generate Markdown
+            Lambda->>Lambda: Generate Markdown from file
+        and Upload file
+            Lambda->>S3: Upload original file
+            S3-->>Lambda: Upload complete
+        end
+
+        Lambda->>DDB: Save file hash + Markdown
+        DDB-->>Lambda: OK
+
+        Lambda-->>FE: Return generated Markdown
+    end
+```
 
 ## 🛠️ Local Development Setup
 
-### 1. Install Poetry
-Follow instructions: https://python-poetry.org/docs/#installation
-
-Or use:
+### 1. Install Dependencies
 ```bash
+# Install Poetry
 curl -sSL https://install.python-poetry.org | python3 -
+
+# Install Python 3.12 using pyenv
+pyenv install 3.12
+pyenv local 3.12
+
+# Install project dependencies
+poetry install
 ```
 
-### 2. Setup the project
-```bash
-cd backend
-poetry env activate
+### 2. Environment Setup
+Create a `.env` file with the following variables:
+```env
+AWS_REGION=us-east-1
+S3_BUCKET_NAME=your-bucket-name
+LAMBDA_NAME=smart-file-search-lambda
+ECR_REPOSITORY=smart-file-search-repository
 ```
 
-### 3. Run the development server
+### 3. Run the Development Server
 ```bash
 poetry run uvicorn app.main:app --reload
 ```
 
-## ☁️ AWS Deployment Setup
+## 🧪 Testing
 
-### 1. Build the package
+Run the test suite:
 ```bash
-# Install dependencies
-poetry install
-
-# Build the package
-poetry build-lambda
+poetry run pytest
 ```
 
-### 2. Deploy to AWS Lambda
+For coverage report:
 ```bash
-# Navigate to Terraform directory
-cd .aws/terraform
+poetry run pytest --cov=app --cov-report=term-missing
+```
 
+## ☁️ AWS Deployment
+
+### 1. Build and Deploy
+```bash
+# Build and deploy using Make
+make all
+```
+
+This will:
+1. Create/update ECR repository
+2. Build and push Docker image
+3. Deploy Lambda function and API Gateway
+4. Run tests against the deployed API
+
+### 2. Manual Deployment Steps
+If needed, you can run the steps manually:
+
+```bash
 # Initialize Terraform
+cd terraform
 terraform init
 
-# Review the changes
-terraform plan
+# Create ECR repository
+terraform apply -target=aws_ecr_repository.app
 
-# Apply the changes
+# Build and push Docker image
+make build
+make push
+
+# Deploy remaining infrastructure
 terraform apply
 ```
 
-After successful deployment, Terraform will output the API Gateway URL where your service is available.
-
-### 3. Clean up (Optional)
-To remove the deployed resources:
+### 3. Clean up
+To remove all deployed resources:
 ```bash
+make clean
+cd terraform
 terraform destroy
 ```
 
-## 📝 Deployment Notes
-- Make sure you have AWS credentials configured properly
-- The deployment uses AWS Lambda with Python 3.11 runtime
-- API Gateway is configured with HTTP API type
-- CloudWatch logging is enabled for both Lambda and API Gateway
+## 📝 API Endpoints
+
+- `POST /api/process` - Process a file and convert to Markdown
+- `GET /api/health` - Health check endpoint
+- `GET /api/files/{file_id}` - Retrieve processed file content
+
+## 🔧 Configuration
+
+The application uses the following AWS services:
+- Lambda for serverless compute
+- API Gateway for HTTP endpoints
+- S3 for file storage
+- DynamoDB for caching and metadata
+- CloudWatch for logging
+
+## 📚 Dependencies
+
+### Main Dependencies
+- FastAPI - Web framework
+- Mangum - AWS Lambda adapter
+- markitdown - File format conversion
+- boto3/aioboto3 - AWS SDK
+- python-multipart - File upload handling
+
+### Development Dependencies
+- pytest - Testing framework
+- pytest-cov - Test coverage
+- httpx - HTTP client for testing
