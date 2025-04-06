@@ -187,6 +187,22 @@ resource "aws_s3_bucket_policy" "app" {
   })
 }
 
+# DynamoDB Table
+resource "aws_dynamodb_table" "app" {
+  name           = "${var.lambda_function_name}-table"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "pk"
+  
+  attribute {
+    name = "pk"
+    type = "S"
+  }
+
+  tags = {
+    Name = "${var.lambda_function_name}-table"
+  }
+}
+
 # IAM Policy for S3 access
 resource "aws_iam_role_policy" "lambda_s3" {
   name = "${var.lambda_function_name}-s3-policy"
@@ -206,6 +222,20 @@ resource "aws_iam_role_policy" "lambda_s3" {
         Resource = [
           aws_s3_bucket.app.arn,
           "${aws_s3_bucket.app.arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:Query",
+          "dynamodb:Scan"
+        ]
+        Resource = [
+          aws_dynamodb_table.app.arn
         ]
       }
     ]
@@ -228,6 +258,7 @@ resource "aws_lambda_function" "app" {
       ECR_REPOSITORY_NAME    = var.ecr_repository_name
       LAMBDA_FUNCTION_NAME   = var.lambda_function_name
       S3_BUCKET_NAME         = var.s3_bucket_name
+      DYNAMODB_TABLE_NAME    = aws_dynamodb_table.app.name
     }
   }
 }
