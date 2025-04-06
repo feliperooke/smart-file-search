@@ -74,9 +74,7 @@ sequenceDiagram
 # Install Poetry
 curl -sSL https://install.python-poetry.org | python3 -
 
-# Install Python 3.12 using pyenv
-pyenv install 3.12
-pyenv local 3.12
+poetry env use python3.12
 
 # Install project dependencies
 poetry install
