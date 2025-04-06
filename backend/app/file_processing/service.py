@@ -222,13 +222,31 @@ class FileProcessorService:
             file_record: The file record from DynamoDB
             
         Returns:
-            FileProcessResponse containing the file information
+            FileProcessResponse containing all file information
         """
         logger.debug(f"Creating response from record: {file_record.file_name}")
+        
+        # Convert history list to dictionary format
+        history_dict = {}
+        for entry in file_record.history:
+            for status, timestamp in entry.items():
+                history_dict[status] = timestamp
+        
         return FileProcessResponse(
+            pk=file_record.pk,
             filename=file_record.file_name,
             url=file_record.file_url,
-            content=file_record.markdown_content
+            content=file_record.markdown_content,
+            file_size=file_record.file_size,
+            file_type=file_record.file_type,
+            markdown_content=file_record.markdown_content,
+            processing_status=file_record.processing_status,
+            embedding_status=file_record.embedding_status,
+            created_at=file_record.created_at,
+            updated_at=file_record.updated_at,
+            error_message=file_record.error_message,
+            metadata=file_record.metadata or {},
+            history=history_dict
         )
 
     async def _extract_text(self, file: UploadFile) -> str:
