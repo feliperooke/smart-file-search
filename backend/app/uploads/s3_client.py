@@ -1,6 +1,6 @@
 import aioboto3
 from botocore.exceptions import NoCredentialsError
-from app.core.config import settings
+from app.infrastructure.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -8,11 +8,19 @@ logger = logging.getLogger(__name__)
 class S3Client:
     def __init__(self):
         self.session = aioboto3.Session()
-        self.client = self.session.client("s3", region_name=settings.AWS_REGION)
+        self.client = None
         logger.info(f"Initialized S3Client with region: {settings.AWS_REGION}")
+
+    async def _ensure_client(self):
+        """
+        Ensure the S3 client is initialized.
+        """
+        if self.client is None:
+            self.client = self.session.client("s3", region_name=settings.AWS_REGION)
 
     async def upload_file(self, file_obj, filename: str) -> str:
         try:
+            await self._ensure_client()
             logger.info(f"Attempting to upload file {filename} to bucket {settings.S3_BUCKET_NAME}")
             async with self.client as s3:
                 await s3.upload_fileobj(file_obj, settings.S3_BUCKET_NAME, filename)

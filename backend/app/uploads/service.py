@@ -6,10 +6,10 @@ class FileUploadService:
     def __init__(self, s3_client: S3Client):
         self.s3_client = s3_client
 
-    async def upload(self, file: UploadFile) -> FileUploadResponse:
-        file_url = await self.s3_client.upload_file(file.file, file.filename)
+    async def upload(self, file: UploadFile, file_id: str) -> FileUploadResponse:
+        file_url = await self.s3_client.upload_file(file.file, file_id)
         return FileUploadResponse(
-            filename=file.filename,
+            filename=file_id,
             url=file_url,
             content=""
         )
