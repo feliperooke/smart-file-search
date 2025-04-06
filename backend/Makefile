@@ -24,7 +24,7 @@ TERRAFORM_ENV_VARS := \
 
 
 # Commands
-.PHONY: ecr-login build push deploy test clean terraform-init terraform-plan terraform-apply terraform-destroy check-env create-infrastructure 
+.PHONY: ecr-login build push deploy test clean terraform-init terraform-plan terraform-apply terraform-destroy check-env create-infrastructure generate-lock
 
 # Check environment variables
 check-env:
@@ -47,6 +47,13 @@ check-env:
 	fi
 	@echo "$(GREEN)✅ All required environment variables are set$(NC)"
 
+# Generate poetry.lock file
+generate-lock:
+	@echo "🔒 Generating poetry.lock file..."
+	poetry env use python3.12
+	poetry lock
+	@echo "$(GREEN)✅ poetry.lock generated successfully$(NC)"
+
 # Create infrastructure with Terraform
 create-infrastructure: check-env terraform-init terraform-apply
 	@echo "$(GREEN)✅ Infrastructure created successfully$(NC)"
@@ -58,7 +65,7 @@ ecr-login: check-env
 	@echo "$(GREEN)✅ Successfully logged in to ECR$(NC)"
 
 # Build Docker image
-build: ecr-login
+build: generate-lock ecr-login
 	@echo "🔨 Building Docker image $(ECR_REPOSITORY):$(IMAGE_TAG)..."
 	docker build -t $(ECR_REPOSITORY):$(IMAGE_TAG) .
 	@echo "$(GREEN)✅ Docker image built successfully$(NC)"
