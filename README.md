@@ -22,7 +22,6 @@ The formats we will accept include:
 
 - [x] DOC, DOCX (Word)
 - [x] XLS, XLSX (Excel)
-- [ ] PPT, PPTX (PowerPoint)
 - [x] TXT (Text)
 - [x] PDF (General)
 
