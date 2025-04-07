@@ -1,6 +1,6 @@
 # Check if .env file exists
-ifneq (,$(wildcard .env))
-    include .env
+ifneq (,$(wildcard backend/.env))
+    include backend/.env
     export
 endif
 
@@ -50,8 +50,8 @@ check-env:
 # Generate poetry.lock file
 generate-lock:
 	@echo "🔒 Generating poetry.lock file..."
-	poetry env use python3.12
-	poetry lock
+	cd backend && poetry env use python3.12
+	cd backend && poetry lock
 	@echo "$(GREEN)✅ poetry.lock generated successfully$(NC)"
 
 # Create infrastructure with Terraform
@@ -67,7 +67,7 @@ ecr-login: check-env
 # Build Docker image
 build: generate-lock ecr-login
 	@echo "🔨 Building Docker image $(ECR_REPOSITORY):$(IMAGE_TAG)..."
-	docker build -t $(ECR_REPOSITORY):$(IMAGE_TAG) .
+	cd backend && docker build -t $(ECR_REPOSITORY):$(IMAGE_TAG) .
 	@echo "$(GREEN)✅ Docker image built successfully$(NC)"
 
 # Push image to ECR
