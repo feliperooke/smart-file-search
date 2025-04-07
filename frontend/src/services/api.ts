@@ -26,4 +26,48 @@ export const uploadFile = async (file: File): Promise<FileRecord> => {
     }
     throw new Error('Upload failed: Unknown error');
   }
+};
+
+interface ChatResponse {
+  answer: string;
+  sources?: {
+    page: number;
+    text: string;
+  }[];
+  error?: string;
+}
+
+export const sendChatMessage = async (fileId: string, message: string): Promise<ChatResponse> => {
+  try {
+    const response = await fetch('http://localhost:8000/api/chat/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        pk: fileId,
+        search: message
+      }),
+      mode: 'cors',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      throw new Error(`Chat request failed: ${errorData}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      return {
+        answer: '',
+        error: `Failed to send message: ${error.message}`
+      };
+    }
+    return {
+      answer: '',
+      error: 'Failed to send message: Unknown error'
+    };
+  }
 }; 

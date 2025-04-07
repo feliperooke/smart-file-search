@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional, Dict
 from datetime import datetime
 
-class FileResponse(BaseModel):
+class FileDTO(BaseModel):
     pk: str
     filename: str
     url: str

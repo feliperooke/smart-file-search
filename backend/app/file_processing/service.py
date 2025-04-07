@@ -68,25 +68,28 @@ class FileProcessorService:
             FileUploadError: If file upload fails
             FileProcessingError: If an unexpected error occurs
         """
+        file_record = None
         try:
             logger.info(f"Starting file processing for: {file.filename}")
             file_id = self._calculate_file_identifier(file)
             
             # Check if the file was already processed
             file_record = await self._get_file_record(file_id)
-            if file_record:
+            
+            if file_record and not self._is_file_with_error(file_record):
                 return self._create_response_from_record(file_record)
             
-            # Create initial record with status "received"
-            file_record = await self._create_initial_record(file_id, file)
+            if not self._is_file_with_error(file_record):
+                # Create initial record with status "received"
+                file_record = await self._create_initial_record(file_id, file)
             
             try:
                 # Extract text and update status to "extracted"
-                extracted_text = await self._extract_text(file)
+                extracted_text = await self._extract_text(file, file_record)
                 file_record = await self._update_processing_status(file_record, "extracted")
                 
                 # Upload file and update status to "stored"
-                upload_response = await self._upload_file(file, file_id)
+                upload_response = await self._upload_file(file, file_record)
                 file_record = await self._update_processing_status(file_record, "stored")
                 
                 # Complete the record with status "completed"
@@ -105,7 +108,12 @@ class FileProcessorService:
                 
         except Exception as e:
             logger.error(f"Unexpected error processing file {file.filename}: {str(e)}", exc_info=True)
+            if file_record:
+                await self._update_processing_status(file_record, "error", str(e))
             raise FileProcessingError(f"Unexpected error processing file: {str(e)}")
+
+    def _is_file_with_error(self, file_record: FileProcessingRecord) -> bool:
+        return file_record and file_record.processing_status == "error"
 
     async def _create_initial_record(self, file_id: str, file: UploadFile) -> FileProcessingRecord:
         """
@@ -157,9 +165,9 @@ class FileProcessorService:
         logger.info(f"Updating status to '{new_status}' for file: {record.file_name}")
         
         record.processing_status = new_status
+        record.error_message = error_message if new_status == "error" else None
         
         if error_message:
-            record.error_message = error_message
             logger.error(f"Error message added: {error_message}")
             
         await self.repository.put_item(record)
@@ -249,7 +257,7 @@ class FileProcessorService:
             history=history_dict
         )
 
-    async def _extract_text(self, file: UploadFile) -> str:
+    async def _extract_text(self, file: UploadFile, file_record: FileProcessingRecord) -> str:
         """
         Extract text from the file.
         
@@ -264,6 +272,11 @@ class FileProcessorService:
         """
         try:
             logger.info(f"Starting text extraction for file: {file.filename}")
+
+            if file_record.markdown_content:
+                logger.info(f"Text already extracted for file: {file.filename}")
+                return file_record.markdown_content
+            
             extract_method = self.text_extraction_service.extract
             if asyncio.iscoroutinefunction(extract_method):
                 logger.debug("Using async text extraction method")
@@ -277,12 +290,13 @@ class FileProcessorService:
             logger.error(f"Error extracting text from file {file.filename}: {str(e)}", exc_info=True)
             raise TextExtractionError(f"Failed to extract text from file: {str(e)}")
 
-    async def _upload_file(self, file: UploadFile, file_id: str):
+    async def _upload_file(self, file: UploadFile, file_record: FileProcessingRecord):
         """
         Upload the file.
         
         Args:
             file: The file to upload
+            file_record: The file processing record
             
         Returns:
             The upload response
@@ -291,14 +305,38 @@ class FileProcessorService:
             FileUploadError: If file upload fails
         """
         try:
-            logger.info(f"Starting file upload for: {file.filename} (ID: {file_id})")
+            logger.info(f"Starting file upload for: {file.filename} (ID: {file_record.pk})")
+
+            if file_record.file_url:
+                logger.info(f"File already uploaded for: {file.filename}")
+                # Create a mock upload response object
+                now = datetime.now().replace(microsecond=0)
+                
+                from app.uploads.schemas import FileUploadResponse
+                return FileUploadResponse(
+                    pk=file_record.pk,
+                    filename=file_record.file_name,
+                    url=file_record.file_url,
+                    content=file_record.markdown_content or "",
+                    file_size=file_record.file_size,
+                    file_type=file_record.file_type,
+                    markdown_content=file_record.markdown_content or "",
+                    processing_status=file_record.processing_status,
+                    embedding_status=file_record.embedding_status,
+                    created_at=file_record.created_at,
+                    updated_at=file_record.updated_at,
+                    error_message=file_record.error_message,
+                    metadata=file_record.metadata or {},
+                    history={}
+                )
+            
             file.file.seek(0)  # Reset file pointer for upload
-            response = await self.upload_service.upload(file, file_id)
+            response = await self.upload_service.upload(file, file_record.pk)
             logger.info(f"File uploaded successfully: {file.filename} (URL: {response.url})")
             return response
-        except Exception as e:
-            logger.error(f"Error uploading file {file.filename}: {str(e)}", exc_info=True)
-            raise FileUploadError(f"Failed to upload file: {str(e)}")
+        except Exception as error:
+            logger.error(f"Error uploading file {file.filename}: {str(error)}", exc_info=True)
+            raise FileUploadError(f"Failed to upload file: {str(error)}")
 
     def _calculate_file_identifier(self, file: UploadFile) -> str:
         """
