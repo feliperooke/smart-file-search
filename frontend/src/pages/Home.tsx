@@ -13,15 +13,20 @@ export const Home = () => {
   };
 
   return (
-    <div className="h-screen w-screen bg-gray-50 flex flex-col items-center justify-center">
-      <div className="w-full max-w-4xl px-4">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
+    <div className="min-h-screen w-full bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col items-center justify-center p-6">
+      <div className="w-full max-w-3xl px-8 py-12 bg-white rounded-2xl shadow-lg">
+        <h1 className="text-4xl font-medium text-center text-gray-900 mb-6">
           Smart File Search
         </h1>
-        <p className="text-center text-gray-600 mb-12">
-          Upload your file and we'll extract its content for you
+        <p className="text-center text-gray-500 text-lg mb-10 max-w-xl mx-auto">
+          Upload your file and we'll intelligently extract its content for you
         </p>
-        <FileUploader onFileUploaded={handleFileUploaded} />
+        <div className="mx-auto max-w-lg">
+          <FileUploader onFileUploaded={handleFileUploaded} />
+        </div>
+      </div>
+      <div className="mt-8 text-sm text-gray-400">
+        Simple. Powerful. Intuitive.
       </div>
     </div>
   );

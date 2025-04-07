@@ -7,10 +7,12 @@ function App() {
   return (
     <FileProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/markdown" element={<MarkdownViewer />} />
-        </Routes>
+        <div>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/markdown" element={<MarkdownViewer />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </FileProvider>
   )
