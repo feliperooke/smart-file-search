@@ -20,11 +20,11 @@ To provide a comprehensive experience, we would ideally accept any file type: do
 
 The formats we will accept include:
 
-- DOC, DOCX (Word)
-- XLS, XLSX (Excel)
-- PPT, PPTX (PowerPoint)
-- TXT (Text)
-- PDF (General)
+- [x] DOC, DOCX (Word)
+- [x] XLS, XLSX (Excel)
+- [ ] PPT, PPTX (PowerPoint)
+- [x] TXT (Text)
+- [x] PDF (General)
 
 ### 🔍 Optimized Search Experience
 
