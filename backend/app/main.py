@@ -7,6 +7,7 @@ import sys
 from app.uploads.router import router as uploads_router
 from app.health.router import router as health_router
 from app.file_processing.router import router as file_processing_router
+from app.chat.router import router as chat_router
 
 # Configure logging
 logging.basicConfig(
@@ -34,6 +35,7 @@ app.add_middleware(
 app.include_router(uploads_router, prefix="/api")
 app.include_router(health_router, prefix="/api")
 app.include_router(file_processing_router, prefix="/api")
+app.include_router(chat_router, prefix="/api")
 
 # AWS Lambda handler
 handler = Mangum(app, lifespan="off") 

@@ -1,4 +1,4 @@
-from app.common.schemas import FileResponse
+from app.common.schemas import FileDTO
 
-class FileProcessResponse(FileResponse):
+class FileProcessResponse(FileDTO):
     pass 
