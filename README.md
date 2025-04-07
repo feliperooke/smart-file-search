@@ -41,7 +41,8 @@ This magic happens through semantic search. Instead of just matching keywords, o
 
 Search through your documents like you're asking a friend. Just type what you're looking for in plain language and get the exact answers you need - no more scrolling or skimming through pages.
 
-
+### 🎥 Demo
+[Smart-File-Search.webm](https://github.com/user-attachments/assets/6ad67fb7-5c54-4cc1-8a28-aa8a36fdacaa)
 
 ### 💡 Future Ideas
 
