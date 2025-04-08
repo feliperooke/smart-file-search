@@ -1,4 +1,4 @@
-import React, { useState, ReactNode, useMemo, useEffect } from 'react';
+import { useState, ReactNode, useMemo, useEffect } from 'react';
 import { FileContext, FileRecord } from './fileContextTypes';
 
 const STORAGE_KEY = 'fileRecord';
