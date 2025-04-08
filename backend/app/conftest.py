@@ -1,4 +1,4 @@
 import pytest
 
-# Configura o pytest-asyncio para rodar os testes assincronos
+# Configure pytest-asyncio to run async tests
 pytest_plugins = ["pytest_asyncio"] 

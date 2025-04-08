@@ -27,7 +27,7 @@ def mock_file():
     mock.content_type = "application/pdf"
     return mock
 
-# Patcheamos o próprio serviço para não afetar outros testes
+# We patch the service itself to not affect other tests
 @pytest.fixture
 def mock_upload_service():
     with patch("app.uploads.service.FileUploadService.upload") as mock_method:
@@ -57,12 +57,14 @@ def test_upload_file_without_file():
     )
     assert response.status_code == 422  # Validation error
 
+# Test class creation
 def test_s3_client():
     # Testa a criação da classe
     s3_client = S3Client()
     assert s3_client is not None
     assert s3_client.client is None
 
+# Test service creation
 def test_file_upload_service():
     # Testa a criação do serviço
     mock_s3_client = MagicMock()
