@@ -1,5 +1,8 @@
 # Smart File Search
 
+[![Try Smart File Search](https://img.shields.io/badge/👉👉%20Try%20Smart%20File%20Search%20-008000?style=for-the-badge&logo=amazonaws&logoColor=white)](https://d3k0iqvqbr31j.cloudfront.net/)
+
+
 Hello, Community!
 
 In this project, we’re going to build an application that provides the best possible experience for uploading and searching for file content. To achieve this goal, we need to think about what it really means to provide an optimized upload experience.
@@ -41,9 +44,11 @@ This magic happens through semantic search. Instead of just matching keywords, o
 Search through your documents like you're asking a friend. Just type what you're looking for in plain language and get the exact answers you need - no more scrolling or skimming through pages.
 
 ### 🎥 Demo
+[![Try Smart File Search](https://img.shields.io/badge/👉👉%20Try%20Smart%20File%20Search%20-008000?style=for-the-badge&logo=amazonaws&logoColor=white)](https://d3k0iqvqbr31j.cloudfront.net/)
+
 [Smart-File-Search.webm](https://github.com/user-attachments/assets/6120fd4f-9d75-4368-92c5-bf42e9ac0095)
 
-### Archtecture
+### 🏗️ Archtecture
 
 ```mermaid
 graph TD
