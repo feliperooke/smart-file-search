@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="45" fill="#333333" />
+  
+  <!-- File icon -->
+  <rect x="30" y="25" width="40" height="50" rx="2" fill="white" />
+  
+  <!-- File lines -->
+  <rect x="35" y="35" width="30" height="3" rx="1" fill="#FF9900" />
+  <rect x="35" y="42" width="20" height="3" rx="1" fill="#FF9900" />
+  <rect x="35" y="49" width="25" height="3" rx="1" fill="#FF9900" />
+  
+  <!-- Magnifying glass -->
+  <circle cx="40" cy="40" r="15" fill="none" stroke="#CCCCCC" stroke-width="6" />
+  <line x1="50" y1="50" x2="65" y2="65" stroke="#CCCCCC" stroke-width="6" stroke-linecap="round" />
+  
+  <!-- Eye -->
+  <circle cx="40" cy="40" r="8" fill="#CCCCCC" />
+  <circle cx="40" cy="40" r="4" fill="#333333" />
+</svg> 
