@@ -5,7 +5,7 @@
 
 Hello, Community!
 
-In this project, we’re going to build an application that provides the best possible experience for uploading and searching for file content. To achieve this goal, we need to think about what it really means to provide an optimized upload experience.
+In this project, we're going to build an application that provides the best possible experience for uploading and searching for file content. To achieve this goal, we need to think about what it really means to provide an optimized upload experience.
 
 ### 🚀 Simplified Upload with Drag-and-Drop
 
@@ -130,5 +130,34 @@ For now, we will keep the scope well defined to ensure efficient and high-qualit
 [Access Open Issues (backlog)](https://github.com/feliperooke/smart-file-search/issues)
 
 ![GitHub issues](https://img.shields.io/github/issues/feliperooke/smart-file-search?label=Backlog)
+
+## 🛠️ Setup Instructions
+
+### Environment Configuration
+
+Before running the application, you need to configure your AWS credentials in the terminal:
+
+```bash
+export AWS_ACCESS_KEY_ID=your_access_key_id
+export AWS_SECRET_ACCESS_KEY=your_secret_access_key
+```
+
+Replace `your_access_key_id` and `your_secret_access_key` with your actual AWS credentials.
+
+### Deployment Commands
+
+To deploy the backend infrastructure and application:
+
+```bash
+make backend-deploy-all
+```
+
+To deploy only the frontend:
+
+```bash
+make frontend-deploy-all
+```
+
+These commands will handle the infrastructure deployment, build the application, and deploy it to AWS.
 
 

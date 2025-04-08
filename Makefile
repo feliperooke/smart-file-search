@@ -144,7 +144,7 @@ test: check-env
 frontend-build:
 	@echo "🔨 Building frontend..."
 	@echo "Generating .env.production with API URL from Terraform..."
-	@echo "VITE_API_URL=$(shell cd terraform && terraform output -raw api_endpoint)" > frontend/.env.production
+	@echo "VITE_API_URL=https://$(shell cd terraform && terraform output -raw api_endpoint | sed 's,^https://,,g' | sed 's,/$$,,')" > frontend/.env.production
 	cd frontend && yarn install
 	cd frontend && yarn build
 	@echo "$(GREEN)✅ Frontend built successfully$(NC)"
@@ -208,5 +208,5 @@ clean:
 	@echo "$(GREEN)✅ Cleanup completed$(NC)"
 
 # Complete deployment pipeline
-all: check-env terraform-apply-ecr push terraform-apply-remaining test
+backend-deploy-all: check-env terraform-apply-ecr push terraform-apply-remaining test
 	@echo "$(GREEN)✨ All tasks completed successfully$(NC)" 
