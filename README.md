@@ -43,6 +43,72 @@ Search through your documents like you're asking a friend. Just type what you're
 ### 🎥 Demo
 [Smart-File-Search.webm](https://github.com/user-attachments/assets/6120fd4f-9d75-4368-92c5-bf42e9ac0095)
 
+### Archtecture
+
+```mermaid
+graph TD
+    %% User
+    User[User] -->|Accesses website| CloudFront[CloudFront Distribution]
+    
+    %% Frontend
+    CloudFront -->|Serves static assets| S3Frontend[S3 Bucket - Frontend]
+    
+    %% Backend
+    User -->|Calls API| APIGateway[API Gateway HTTP API]
+    APIGateway -->|Invokes function| Lambda[Lambda Function]
+    
+    %% Storage
+    Lambda -->|Stores files| S3Backend[S3 Bucket - Backend]
+    Lambda -->|Reads/Writes file data| DynamoDB[DynamoDB Table]
+    
+    %% Containerization
+    ECR[ECR Repository] -->|Push container image| ECRPush[ECR Image Push]
+    
+    %% Monitoring
+    Lambda -->|Sends logs| CloudWatch[CloudWatch Logs]
+    APIGateway -->|Sends logs| CloudWatch
+    
+    %% Events / Deployment
+    ECRPush -->|Triggers rule| EventBridge[EventBridge Rule]
+    EventBridge -->|Deploys updated Lambda image| Lambda
+    
+    %% Styles
+    classDef aws fill:#FF9900,stroke:#232F3E,color:white;
+    classDef user fill:#4285F4,stroke:#0F9D58,color:white;
+    
+    class CloudFront,S3Frontend,APIGateway,Lambda,S3Backend,DynamoDB,ECR,CloudWatch,EventBridge aws;
+    class User,ECRPush user;
+    
+    %% Titles
+    subgraph "Frontend"
+        CloudFront
+        S3Frontend
+    end
+    
+    subgraph "Backend"
+        APIGateway
+        Lambda
+    end
+    
+    subgraph "Storage"
+        S3Backend
+        DynamoDB
+    end
+    
+    subgraph "Containerization"
+        ECR
+        ECRPush
+    end
+    
+    subgraph "Monitoring"
+        CloudWatch
+    end
+    
+    subgraph "Events & Deployment"
+        EventBridge
+    end
+```
+
 
 ### 💡 Future Ideas
 

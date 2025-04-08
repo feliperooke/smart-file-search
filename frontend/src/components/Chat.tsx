@@ -108,7 +108,7 @@ export const Chat: React.FC<ChatProps> = ({ isMobile = false, onClose }) => {
       } else {
         setMessages([
           ...updatedMessages,
-          { type: 'answer' as const, content: response.content, delay: 300 }
+          { type: 'answer' as const, content: response.content || response.answer, delay: 300 }
         ]);
       }
     } catch {
